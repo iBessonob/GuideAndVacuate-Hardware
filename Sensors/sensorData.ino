@@ -18,8 +18,11 @@
 #include <FirebaseESP32.h>
 
 //digital sensors
-#include <DHT.h>
-#include <IRremote.h>
+#include "DHT.h"
+
+#define DHTPIN 4
+#define DHTTYPE DHT11   
+DHT dht(DHTPIN, DHTTYPE);
 
 
 #define FIREBASE_HOST "https://hackmit-df9ea.firebaseio.com/"
@@ -39,19 +42,16 @@ FirebaseJson json;
 //Firebase URI Path
 String path = "SensorData";
 
-//Sensor instances
-DHT temp_sensor(5, DHT11);
+//MQ7
+float RS_gas = 0;
+float ratio = 0;
+float sensorValue = 0;
+float sensor_volt = 0;
+const float R0 = 2450.0;
 
-//part of IR sensor
-IRrecv irrecv(7);
-decode_results results;
-
-/*
-Setup firebase 
-*/
+//setup firebase
 void setup()
 {
-
   /*Connect to Wifi*/
   Serial.begin(115200);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -61,15 +61,8 @@ void setup()
     delay(300);
   }
 
-  /*Analog sensor initialization here*/
-  pinMode(MQ5, INPUT);
-  pinMode(MQ7, INPUT);
-
   //miscellaneous sensor setup
-  
-  //part of IR sensor
-  irrecv.enableIRIn();
-  irrecv.blink13(true);
+  dht.begin();
 
   /*Connect to firebase*/
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
@@ -83,42 +76,49 @@ void setup()
 
 void loop()
 {
-  //other 3 sensor quantities
-  temperature = temp_sensor.readTemperature(); //temp
-  int mq5gas_value = analogRead(MQ5); //gas
-  int mq7gas_value = analogRead(MQ7); //monoxide
+  //--------------------------------------------------------------
+  //DHT Temperature Sensor
+    // Reading temperature or humidity takes about 250 milliseconds!
+  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+  float h = dht.readHumidity();
+  // Read temperature as Celsius (the default)
+  float t = dht.readTemperature();
+  // Read temperature as Fahrenheit (isFahrenheit = true)
+  float f = dht.readTemperature(true);
 
-  //part of IR sensor
-  if(irrecv.decode(@results)){
-        Serial.println(results.value, HEX);
-        Serial.println(results.value, DEC); //infared
-        irrecv.resume();
-        Serial.println();
+  // Check if any reads failed and exit early (to try again).
+  if (isnan(h) || isnan(t) || isnan(f)) {
+    Serial.println(F("Failed to read from DHT sensor!"));
+    return;
   }
 
+  // Compute heat index in Fahrenheit (the default)
+  float hif = dht.computeHeatIndex(f, h);
+  // Compute heat index in Celsius (isFahreheit = false)
+  float hic = dht.computeHeatIndex(t, h, false);
+
+  //-------------------------------------------------------------
+  //MQ7 Carbon Monoxide
+   sensorValue = analogRead(34);
+   sensor_volt = (sensorValue*3.3)/4096;
+   RS_gas = (3.3-sensor_volt)/sensor_volt;
+   ratio = RS_gas/R0; //Replace R0 with the value found using the sketch above
+   float x = 1538.46 * ratio;
+   float ppm = pow(x,-1.709);
+
+  //-------------------------------------------------------------
   //send the data to firebase
   //this may need revision
   //in example.ino not sure how firebseData gets initialized
-  try{
-    Firebase.set(firebaseData, path + "/Infared"); //IR data
-  }catch(int e){
-    Serial.println("INFARED ERROR: Exception no: " + e + " occured.");
-  }
 
   try{
-    Firebase.set(mq5gas_value, path + "/Gas"); //GAS data
-  }catch(int e){
-    Serial.println("GAS ERROR: Exception no: " + e + " occured.");
-  }
-
-  try{
-    Firebase.set(mq7gas_value, path + "/Monoxide"); //MONOXIDE data
+    Firebase.setFloat(firebaseData, path + "/Monoxide", ppm); //MONOXIDE data
   }catch(int e){
     Serial.println("MONOXIDE ERROR: Exception no: " + e + " occured.");
   }
 
   try{
-    Firebase.set(firebaseData, path + "/Temperature"); //TEMPERATURE data
+    Firebase.setFloat(firebaseData, path + "/Temperature", t); //TEMPERATURE data in Celcius
   }catch(int e){
     Serial.println("TEMPERATURE ERROR: Exception no: " + e + " occured.");
   }

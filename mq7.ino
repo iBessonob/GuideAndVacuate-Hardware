@@ -3,7 +3,7 @@ float RS_gas = 0;
 float ratio = 0;
 float sensorValue = 0;
 float sensor_volt = 0;
-float R0 = 2450.0;
+const float R0 = 2450.0;
  
 void setup() {
  Serial.begin(9600);
