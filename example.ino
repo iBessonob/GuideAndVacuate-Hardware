@@ -18,8 +18,8 @@
 #include <FirebaseESP32.h>
 
 
-#define FIREBASE_HOST "YOUR_FIREBASE_PROJECT.firebaseio.com"
-#define FIREBASE_AUTH "YOUR_FIREBASE_DATABASE_SECRET"
+#define FIREBASE_HOST "https://hackmit-df9ea.firebaseio.com/"
+#define FIREBASE_AUTH "gGcWbTzz1naLRKpR3EBPcHg3rBdzDyvMwNtGxPQ1"
 #define WIFI_SSID "GUSEC"
 #define WIFI_PASSWORD ""
 
