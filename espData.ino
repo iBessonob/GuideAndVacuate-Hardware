@@ -1,7 +1,6 @@
  /* Firebase ESP32
  * https://www.electroniclinic.com/
  */
- 
 #include <WiFi.h>
 #include <FirebaseESP32.h>
  
