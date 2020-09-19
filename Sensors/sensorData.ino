@@ -36,6 +36,9 @@
 FirebaseData firebaseData;
 FirebaseJson json;
 
+//Firebase URI Path
+String path = "SensorData";
+
 //Sensor instances
 DHT temp_sensor(5, DHT11);
 
@@ -75,14 +78,12 @@ void setup()
   Firebase.setReadTimeout(firebaseData, 1000 * 60);
   //tiny, small, medium, large and unlimited.
   //Size and its write timeout e.g. tiny (1s), small (10s), medium (30s) and large (60s).
-  Firebase.setwriteSizeLimit(firebaseData, "tiny");
-
-  /*Read data here (or somewhere else if better)*/
-
+  Firebase.setwriteSizeLimit(firebaseData, "small");
 }
 
 void loop()
 {
+  //other 3 sensor quantities
   temperature = temp_sensor.readTemperature();
   int mq5gas_value = analogRead(MQ5);
   int mq7gas_value = analogRead(MQ7);
@@ -93,5 +94,12 @@ void loop()
         Serial.println(results.value, DEC);
         irrecv.resume();
         Serial.println();
+  }
+
+  //send the data to firebase
+  try{
+    Firebase.setDouble(firebaseData, path + "/Infared"); //IR data
+  }catch(int e){
+    Serial.println("ERROR: Exception no: " + e + " occured.");
   }
 }
