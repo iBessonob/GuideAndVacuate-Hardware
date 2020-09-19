@@ -10,7 +10,7 @@
 /*
 Is this needed if read/write permissions are true
 */
-#define FIREBASE_AUTH "AIzaSyCOJbAKgkCEvTjHqUnEH4Oyt1NGqkiMLNQ"
+#define FIREBASE_AUTH "gGcWbTzz1naLRKpR3EBPcHg3rBdzDyvMwNtGxPQ1"
 #define WIFI_SSID "AndroidAP7DF8"
 #define WIFI_PASSWORD "electroniclinic"
  
