@@ -33,6 +33,7 @@ DHT dht(DHTPIN, DHTTYPE);
 //analog sensors
 #define MQ5 34 //PIN NUMBER
 #define MQ7 35 //PIN NUMBER
+#define FIRE 33
 
 
 //Define FirebaseESP32 data object
@@ -72,6 +73,8 @@ void setup()
   //tiny, small, medium, large and unlimited.
   //Size and its write timeout e.g. tiny (1s), small (10s), medium (30s) and large (60s).
   Firebase.setwriteSizeLimit(firebaseData, "small");
+  pinMode(INPUT,FIRE);
+  
 }
 
 void loop()
@@ -108,6 +111,7 @@ void loop()
    float ppm = pow(x,-1.709);
 
   //-------------------------------------------------------------
+  boolean fire_ir = digitalRead(FIRE);
     //-------------------------------------------------------------
   //MQ5 Gas
   R0 = 2225;
@@ -133,6 +137,12 @@ void loop()
     Firebase.setFloat(firebaseData, path + "/LPG", ppm2); //MONOXIDE data
   }catch(int e){
     Serial.println("LPG ERROR: Exception no: " + e );
+  }
+ 
+   try{
+    Firebase.setFloat(firebaseData, path + "/FIRE, fire_ir); //MONOXIDE data
+  }catch(int e){
+    Serial.println("MONOXIDE ERROR: Exception no: " + e );
   }
 
   try{
