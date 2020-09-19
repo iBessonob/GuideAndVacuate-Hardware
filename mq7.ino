@@ -3,7 +3,7 @@ float RS_gas = 0;
 float ratio = 0;
 float sensorValue = 0;
 float sensor_volt = 0;
-const float R0 = 2450.0;
+float R0 = 2450.0;//this would be 2225 for thw lpg mq sensor , also change the input pin numbers and variables
  
 void setup() {
  Serial.begin(9600);
