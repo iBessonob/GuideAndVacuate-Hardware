@@ -47,13 +47,13 @@ float RS_gas = 0;
 float ratio = 0;
 float sensorValue = 0;
 float sensor_volt = 0;
-const float R0 = 2450.0;
+float R0 = 2450.0;
 
 //setup firebase
 void setup()
 {
   /*Connect to Wifi*/
-  Serial.begin(115200);
+  Serial.begin(9600);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -99,12 +99,24 @@ void loop()
 
   //-------------------------------------------------------------
   //MQ7 Carbon Monoxide
+  R0 = 2450;
    sensorValue = analogRead(34);
    sensor_volt = (sensorValue*3.3)/4096;
    RS_gas = (3.3-sensor_volt)/sensor_volt;
    ratio = RS_gas/R0; //Replace R0 with the value found using the sketch above
    float x = 1538.46 * ratio;
    float ppm = pow(x,-1.709);
+
+  //-------------------------------------------------------------
+    //-------------------------------------------------------------
+  //MQ5 Gas
+  R0 = 2225;
+   sensorValue = analogRead(35);
+   sensor_volt = (sensorValue*3.3)/4096;
+   RS_gas = (3.3-sensor_volt)/sensor_volt;
+   ratio = RS_gas/R0; //Replace R0 with the value found using the sketch above
+   x = 1538.46 * ratio;
+   float ppm2 = pow(x,-1.709);
 
   //-------------------------------------------------------------
   //send the data to firebase
@@ -114,12 +126,18 @@ void loop()
   try{
     Firebase.setFloat(firebaseData, path + "/Monoxide", ppm); //MONOXIDE data
   }catch(int e){
-    Serial.println("MONOXIDE ERROR: Exception no: " + e + " occured.");
+    Serial.println("MONOXIDE ERROR: Exception no: " + e );
+  }
+  
+    try{
+    Firebase.setFloat(firebaseData, path + "/LPG", ppm2); //MONOXIDE data
+  }catch(int e){
+    Serial.println("LPG ERROR: Exception no: " + e );
   }
 
   try{
     Firebase.setFloat(firebaseData, path + "/Temperature", t); //TEMPERATURE data in Celcius
   }catch(int e){
-    Serial.println("TEMPERATURE ERROR: Exception no: " + e + " occured.");
+    Serial.println("TEMPERATURE ERROR: Exception no: " + e );
   }
 }
