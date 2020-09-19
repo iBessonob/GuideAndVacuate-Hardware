@@ -24,7 +24,8 @@
 #define WIFI_SSID "GUSEC"
 #define WIFI_PASSWORD ""
 
-#define MQ5 34 //CHANGE mq5pin TO CUSTOM PIN NUMBER 
+#define MQ5 34 //PIN NUMBER
+#define MQ7 35 //PIN NUMBER
 
 
 //Define FirebaseESP32 data object
@@ -51,6 +52,7 @@ void setup()
 
   /*Analog sensor initialization here*/
   pinMode(MQ5, INPUT);
+  pinMode(MQ7, INPUT);
 
   /*Connect to firebase*/
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
@@ -69,4 +71,5 @@ void loop()
 {
   temperature = temp_sensor.readTemperature();
   int mq5gas_value = analogRead(MQ5);
+  int mq7gas_value = analogRead(MQ7);
 }
