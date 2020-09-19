@@ -16,6 +16,7 @@
 
 #include <WiFi.h>
 #include <FirebaseESP32.h>
+#include <DHT.h>
 
 
 #define FIREBASE_HOST "https://hackmit-df9ea.firebaseio.com/"
@@ -64,7 +65,7 @@ void setup()
   Firebase.enableClassicRequest(firebaseData, true);
   */
 
-  String path = "/Test";
+  String path = "/SensorData";
 
   Serial.println("------------------------------------");
   Serial.println("Set double test...");
