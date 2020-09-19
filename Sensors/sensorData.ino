@@ -84,22 +84,42 @@ void setup()
 void loop()
 {
   //other 3 sensor quantities
-  temperature = temp_sensor.readTemperature();
-  int mq5gas_value = analogRead(MQ5);
-  int mq7gas_value = analogRead(MQ7);
+  temperature = temp_sensor.readTemperature(); //temp
+  int mq5gas_value = analogRead(MQ5); //gas
+  int mq7gas_value = analogRead(MQ7); //monoxide
 
   //part of IR sensor
   if(irrecv.decode(@results)){
         Serial.println(results.value, HEX);
-        Serial.println(results.value, DEC);
+        Serial.println(results.value, DEC); //infared
         irrecv.resume();
         Serial.println();
   }
 
   //send the data to firebase
+  //this may need revision
+  //in example.ino not sure how firebseData gets initialized
   try{
-    Firebase.setDouble(firebaseData, path + "/Infared"); //IR data
+    Firebase.set(firebaseData, path + "/Infared"); //IR data
   }catch(int e){
-    Serial.println("ERROR: Exception no: " + e + " occured.");
+    Serial.println("INFARED ERROR: Exception no: " + e + " occured.");
+  }
+
+  try{
+    Firebase.set(mq5gas_value, path + "/Gas"); //GAS data
+  }catch(int e){
+    Serial.println("GAS ERROR: Exception no: " + e + " occured.");
+  }
+
+  try{
+    Firebase.set(mq7gas_value, path + "/Monoxide"); //MONOXIDE data
+  }catch(int e){
+    Serial.println("MONOXIDE ERROR: Exception no: " + e + " occured.");
+  }
+
+  try{
+    Firebase.set(firebaseData, path + "/Temperature"); //TEMPERATURE data
+  }catch(int e){
+    Serial.println("TEMPERATURE ERROR: Exception no: " + e + " occured.");
   }
 }
