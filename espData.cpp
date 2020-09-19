@@ -1,4 +1,4 @@
- * Firebase ESP32
+ /* Firebase ESP32
  * https://www.electroniclinic.com/
  */
  
@@ -11,7 +11,7 @@
 /*
 Is this needed if read/write permissions are true
 */
-//  #define FIREBASE_AUTH "gga1JXWY5rgyBHk56RSXLn3FPpajWfcq6itIM3nI"
+#define FIREBASE_AUTH "AIzaSyCOJbAKgkCEvTjHqUnEH4Oyt1NGqkiMLNQ"
 #define WIFI_SSID "AndroidAP7DF8"
 #define WIFI_PASSWORD "electroniclinic"
  
