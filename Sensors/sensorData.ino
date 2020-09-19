@@ -17,6 +17,7 @@
 #include <WiFi.h>
 #include <FirebaseESP32.h>
 #include <DHT.h>
+#include <>
 
 
 #define FIREBASE_HOST "https://hackmit-df9ea.firebaseio.com/"
@@ -29,6 +30,8 @@
 FirebaseData firebaseData;
 FirebaseJson json;
 
+//Sensor instances
+DHT temp_sensor(5, DHT11);
 
 /*
 Setup firebase 
@@ -62,9 +65,9 @@ void setup()
 
   String path = "/SensorData";
 
-  
 }
 
 void loop()
 {
+  temperature = temp_sensor.readTemperature();
 }
