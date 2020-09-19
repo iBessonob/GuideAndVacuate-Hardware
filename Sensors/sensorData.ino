@@ -17,13 +17,14 @@
 #include <WiFi.h>
 #include <FirebaseESP32.h>
 #include <DHT.h>
-#include <>
 
 
 #define FIREBASE_HOST "https://hackmit-df9ea.firebaseio.com/"
 #define FIREBASE_AUTH "gGcWbTzz1naLRKpR3EBPcHg3rBdzDyvMwNtGxPQ1"
 #define WIFI_SSID "GUSEC"
 #define WIFI_PASSWORD ""
+
+#define MQ5 34 //CHANGE mq5pin TO CUSTOM PIN NUMBER 
 
 
 //Define FirebaseESP32 data object
@@ -48,6 +49,9 @@ void setup()
     delay(300);
   }
 
+  /*Analog sensor initialization here*/
+  pinMode(MQ5, INPUT);
+
   /*Connect to firebase*/
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Firebase.reconnectWiFi(true);
@@ -57,17 +61,12 @@ void setup()
   //Size and its write timeout e.g. tiny (1s), small (10s), medium (30s) and large (60s).
   Firebase.setwriteSizeLimit(firebaseData, "tiny");
 
-  /*
-  This option allows get and delete functions (PUT and DELETE HTTP requests) works for device connected behind the
-  Firewall that allows only GET and POST requests.
-  Firebase.enableClassicRequest(firebaseData, true);
-  */
-
-  String path = "/SensorData";
+  /*Read data here (or somewhere else if better)*/
 
 }
 
 void loop()
 {
   temperature = temp_sensor.readTemperature();
+  int mq5gas_value = analogRead(MQ5);
 }
