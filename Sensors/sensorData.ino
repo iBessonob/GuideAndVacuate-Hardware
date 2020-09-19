@@ -16,7 +16,10 @@
 
 #include <WiFi.h>
 #include <FirebaseESP32.h>
+
+//digital sensors
 #include <DHT.h>
+#include <IRremote.h>
 
 
 #define FIREBASE_HOST "https://hackmit-df9ea.firebaseio.com/"
@@ -24,6 +27,7 @@
 #define WIFI_SSID "GUSEC"
 #define WIFI_PASSWORD ""
 
+//analog sensors
 #define MQ5 34 //PIN NUMBER
 #define MQ7 35 //PIN NUMBER
 
@@ -34,6 +38,10 @@ FirebaseJson json;
 
 //Sensor instances
 DHT temp_sensor(5, DHT11);
+
+//part of IR sensor
+IRrecv irrecv(7);
+decode_results results;
 
 /*
 Setup firebase 
@@ -54,6 +62,12 @@ void setup()
   pinMode(MQ5, INPUT);
   pinMode(MQ7, INPUT);
 
+  //miscellaneous sensor setup
+  
+  //part of IR sensor
+  irrecv.enableIRIn();
+  irrecv.blink13(true);
+
   /*Connect to firebase*/
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Firebase.reconnectWiFi(true);
@@ -72,4 +86,12 @@ void loop()
   temperature = temp_sensor.readTemperature();
   int mq5gas_value = analogRead(MQ5);
   int mq7gas_value = analogRead(MQ7);
+
+  //part of IR sensor
+  if(irrecv.decode(@results)){
+        Serial.println(results.value, HEX);
+        Serial.println(results.value, DEC);
+        irrecv.resume();
+        Serial.println();
+  }
 }
