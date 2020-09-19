@@ -142,7 +142,7 @@ void loop()
    try{
     Firebase.setFloat(firebaseData, path + "/FIRE, fire_ir); //MONOXIDE data
   }catch(int e){
-    Serial.println("MONOXIDE ERROR: Exception no: " + e );
+    Serial.println("FIRE_IR ERROR: Exception no: " + e );
   }
 
   try{
