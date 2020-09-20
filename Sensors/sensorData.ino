@@ -1,25 +1,10 @@
 
-/*
- * Created by K. Suwatchai (Mobizt)
- * 
- * Email: k_suwatchai@hotmail.com
- * 
- * Github: https://github.com/mobizt
- * 
- * Copyright (c) 2020 mobizt
- * 
- * This example is for FirebaseESP32 Arduino library v 3.7.3 and later
- *
-*/
-
-//This example shows how to read, store and update database using get, set, push and update functions.
-
 #include <WiFi.h>
 #include <FirebaseESP32.h>
 
 //digital sensors
 #include "DHT.h"
-
+#include "time.h"
 #define DHTPIN 4
 #define DHTTYPE DHT11   
 DHT dht(DHTPIN, DHTTYPE);
@@ -34,7 +19,9 @@ DHT dht(DHTPIN, DHTTYPE);
 #define MQ5 34 //PIN NUMBER
 #define MQ7 35 //PIN NUMBER
 #define FIRE 33
-
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 0;
+const int   daylightOffset_sec = 3600;
 
 //Define FirebaseESP32 data object
 FirebaseData firebaseData;
@@ -61,8 +48,8 @@ void setup()
     Serial.print(".");
     delay(300);
   }
-
-  //miscellaneous sensor setup
+ configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+    //miscellaneous sensor setup
   dht.begin();
 
   /*Connect to firebase*/
@@ -122,11 +109,54 @@ void loop()
    x = 1538.46 * ratio;
    float ppm2 = pow(x,-1.709);
 
+
+struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+  Serial.print("Day of week: ");
+  Serial.println(&timeinfo, "%A");
+  Serial.print("Month: ");
+  Serial.println(&timeinfo, "%B");
+  Serial.print("Day of Month: ");
+  Serial.println(&timeinfo, "%d");
+  Serial.print("Year: ");
+  Serial.println(&timeinfo, "%Y");
+  Serial.print("Hour: ");
+  Serial.println(&timeinfo, "%H");
+  Serial.print("Hour (12 hour format): ");
+  Serial.println(&timeinfo, "%I");
+  Serial.print("Minute: ");
+  Serial.println(&timeinfo, "%M");
+  Serial.print("Second: ");
+  Serial.println(&timeinfo, "%S");
+
+  Serial.println("Time variables");
+  char timeHour[3];
+  strftime(timeHour,3, "%H", &timeinfo);
+  Serial.println(timeHour);
+  char timeWeekDay[10];
+  strftime(timeWeekDay,10, "%A", &timeinfo);
+  Serial.println(timeWeekDay);
+  Serial.println();
+
   //-------------------------------------------------------------
   //send the data to firebase
   //this may need revision
   //in example.ino not sure how firebseData gets initialized
 
+  try{
+    Firebase.setString(firebaseData, path + "/day of the week", timeWeekDay); //MONOXIDE data
+  }catch(int e){
+    Serial.println("dayweek ERROR: Exception no: " + e );
+  }
+  try{
+    Firebase.setString(firebaseData, path + "/timehour", timeHour); //MONOXIDE data
+  }catch(int e){
+    Serial.println("hour ERROR: Exception no: " + e );
+  }
   try{
     Firebase.setFloat(firebaseData, path + "/Monoxide", ppm); //MONOXIDE data
   }catch(int e){
@@ -140,11 +170,10 @@ void loop()
   }
  
    try{
-    Firebase.setFloat(firebaseData, path + "/FIRE, fire_ir); //MONOXIDE data
+    Firebase.setFloat(firebaseData, path + "/FIRE", fire_ir); //MONOXIDE data
   }catch(int e){
-    Serial.println("FIRE_IR ERROR: Exception no: " + e );
+    Serial.println("Mfire ERROR: Exception no: " + e );
   }
-
   try{
     Firebase.setFloat(firebaseData, path + "/Temperature", t); //TEMPERATURE data in Celcius
   }catch(int e){
