@@ -1,19 +1,4 @@
 
-/*
- * Created by K. Suwatchai (Mobizt)
- * 
- * Email: k_suwatchai@hotmail.com
- * 
- * Github: https://github.com/mobizt
- * 
- * Copyright (c) 2020 mobizt
- * 
- * This example is for FirebaseESP32 Arduino library v 3.7.3 and later
- *
-*/
-
-//This example shows how to read, store and update database using get, set, push and update functions.
-
 #include <WiFi.h>
 #include <FirebaseESP32.h>
 #include <DHT.h>
