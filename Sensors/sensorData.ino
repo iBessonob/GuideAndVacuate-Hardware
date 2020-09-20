@@ -136,6 +136,10 @@ struct tm timeinfo;
   Serial.println("Time variables");
   char timeHour[3];
   strftime(timeHour,3, "%H", &timeinfo);
+    char timeMinute[3];
+  strftime(timeMinute,3, "%M", &timeinfo);
+    char timeSec[3];
+  strftime(timeSec,3, "%S", &timeinfo);
   Serial.println(timeHour);
   char timeWeekDay[10];
   strftime(timeWeekDay,10, "%A", &timeinfo);
@@ -154,6 +158,16 @@ struct tm timeinfo;
   }
   try{
     Firebase.setString(firebaseData, path + "/timehour", timeHour); //MONOXIDE data
+  }catch(int e){
+    Serial.println("hour ERROR: Exception no: " + e );
+  }
+   try{
+    Firebase.setString(firebaseData, path + "/timeminute", timeMinute); //MONOXIDE data
+  }catch(int e){
+    Serial.println("hour ERROR: Exception no: " + e );
+  }
+   try{
+    Firebase.setString(firebaseData, path + "/timesec", timeSec); //MONOXIDE data
   }catch(int e){
     Serial.println("hour ERROR: Exception no: " + e );
   }
