@@ -11,7 +11,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 
 #define FIREBASE_HOST "https://hackmit-df9ea.firebaseio.com/"
-#define FIREBASE_AUTH "gGcWbTzz1naLRKpR3EBPcHg3rBdzDyvMwNtGxPQ1"
+#define FIREBASE_AUTH "yourauthtoken"
 #define WIFI_SSID "GUSEC"
 #define WIFI_PASSWORD ""
 
